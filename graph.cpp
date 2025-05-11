@@ -203,7 +203,7 @@ public:
         return result;
     }
 
-    // 计算最短路径
+    // 计算最短路径(Dijkstra算法)
     string calcShortestPath(const string& word1, const string& word2) const {
         string w1 = preprocessWord(word1);
         string w2 = preprocessWord(word2);
