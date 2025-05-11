@@ -97,7 +97,7 @@ public:
         }
     }
 
-    // 展示有向图
+    // 展示有向图（邻接表）
     void showDirectedGraph() const {
         cout << "Directed Graph:" << endl;
         cout << "----------------" << endl;
