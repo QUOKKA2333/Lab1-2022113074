@@ -355,7 +355,7 @@ public:
         return result;
     }
 
-    // ==== 新增文件输出功能 ====
+
     bool writePathToFile(const vector<string>& path, const string& filename) const {
         // 检查文件名合法性
         if (filename.empty() || filename.find_first_of("\\/:*?\"<>|") != string::npos) {
