@@ -25,7 +25,7 @@ private:
     unordered_map<string, vector<Edge>> adjList;
     unordered_set<string> words;
 
-    // 辅助函数
+    // 辅助函数(分割文本)
     vector<string> splitText(const string& text) const {
         vector<string> tokens;
         string token;
@@ -67,7 +67,7 @@ private:
     }
 
 public:
-    // 构建图
+    // 构建有向图
     void buildGraphFromFile(const string& filename) {
         ifstream file(filename);
         if (!file.is_open()) {
