@@ -25,7 +25,7 @@ private:
     unordered_map<string, vector<Edge>> adjList;
     unordered_set<string> words;
 
-    // 辅助函数
+
     vector<string> splitText(const string& text) const {
         vector<string> tokens;
         string token;
@@ -97,7 +97,7 @@ public:
         }
     }
 
-    // 展示有向图（邻接表）
+    // 展示有向图
     void showDirectedGraph() const {
         cout << "Directed Graph:" << endl;
         cout << "----------------" << endl;
@@ -203,7 +203,7 @@ public:
         return result;
     }
 
-    // 计算最短路径(Dijkstra算法)
+    // 计算最短路径
     string calcShortestPath(const string& word1, const string& word2) const {
         string w1 = preprocessWord(word1);
         string w2 = preprocessWord(word2);
@@ -404,7 +404,7 @@ public:
     }
     
 };
-
+//主函数
 int main(int argc, char* argv[]) {
     WordGraph graph;
 

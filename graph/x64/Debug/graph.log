@@ -1,0 +1,19 @@
+﻿  graph.cpp
+C:\Users\17854\source\repos\graph\graph.cpp(204,70): warning C4267: “参数”: 从“size_t”转换到“_Ty”，可能丢失数据
+C:\Users\17854\source\repos\graph\graph.cpp(204,70): warning C4267:         with
+C:\Users\17854\source\repos\graph\graph.cpp(204,70): warning C4267:         [
+C:\Users\17854\source\repos\graph\graph.cpp(204,70): warning C4267:             _Ty=int
+C:\Users\17854\source\repos\graph\graph.cpp(204,70): warning C4267:         ]
+C:\Users\17854\source\repos\graph\graph.cpp(288,36): warning C4244: “初始化”: 从“unsigned __int64”转换到“double”，可能丢失数据
+C:\Users\17854\source\repos\graph\graph.cpp(288,24): warning C4244: “初始化”: 从“unsigned __int64”转换到“const double”，可能丢失数据
+C:\Users\17854\source\repos\graph\graph.cpp(337,56): warning C4267: “参数”: 从“size_t”转换到“_Ty”，可能丢失数据
+C:\Users\17854\source\repos\graph\graph.cpp(337,56): warning C4267:         with
+C:\Users\17854\source\repos\graph\graph.cpp(337,56): warning C4267:         [
+C:\Users\17854\source\repos\graph\graph.cpp(337,56): warning C4267:             _Ty=int
+C:\Users\17854\source\repos\graph\graph.cpp(337,56): warning C4267:         ]
+C:\Users\17854\source\repos\graph\graph.cpp(355,64): warning C4267: “参数”: 从“size_t”转换到“_Ty”，可能丢失数据
+C:\Users\17854\source\repos\graph\graph.cpp(355,64): warning C4267:         with
+C:\Users\17854\source\repos\graph\graph.cpp(355,64): warning C4267:         [
+C:\Users\17854\source\repos\graph\graph.cpp(355,64): warning C4267:             _Ty=int
+C:\Users\17854\source\repos\graph\graph.cpp(355,64): warning C4267:         ]
+  graph.vcxproj -> C:\Users\17854\source\repos\graph\x64\Debug\graph.exe
