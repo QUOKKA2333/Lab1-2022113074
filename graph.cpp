@@ -10,7 +10,6 @@
 #include <limits>
 #include <iomanip>
 #include <sstream>
-#include <algorithm>
 
 using namespace std;
 
@@ -19,7 +18,7 @@ private:
     struct Edge {
         string target;
         int weight;
-        Edge(string t, int w) : target(t), weight(w) {}
+        Edge(std::string t, int w) : target(std::move(t)), weight(w) {}
     };
 
     unordered_map<string, vector<Edge>> adjList;
@@ -31,7 +30,7 @@ private:
         string token;
         for (char c : text) {
             if (isalpha(c)) {
-                token += tolower(c);
+                token += static_cast<char>(tolower(c));
             }
             else if (c == ' ' || c == '\n') {
                 if (!token.empty()) {
@@ -50,7 +49,7 @@ private:
         string result;
         for (char c : word) {
             if (isalpha(c)) {
-                result += tolower(c);
+                result += static_cast<char>(tolower(c));
             }
         }
         return result;
@@ -71,7 +70,7 @@ public:
     void buildGraphFromFile(const string& filename) {
         ifstream file(filename);
         if (!file.is_open()) {
-            cerr << "Error: Could not open file " << filename << endl;
+            cerr << "Error: Could not open file " << filename << '\n';
             return;
         }
 
@@ -85,30 +84,49 @@ public:
         vector<string> tokens = splitText(fullText);
         if (tokens.empty()) return;
 
+        // 先把所有词加到 words 集合里
+        for (const auto& token : tokens) {
+            string word = preprocessWord(token);
+            if (!word.empty()) {
+                words.insert(word);
+            }
+        }
+
+        if (tokens.size() == 1) {
+            string word = preprocessWord(tokens[0]);
+            if (!word.empty()) {
+                words.insert(word);
+            }
+            return;
+        }
+        std::cout << "[buildGraphFromFile] Words set contains:\n";
+        for (const auto& w : words) {
+            std::cout << w << "\n";
+        }
+        // 再加边
         for (size_t i = 0; i < tokens.size() - 1; ++i) {
             string word1 = preprocessWord(tokens[i]);
             string word2 = preprocessWord(tokens[i + 1]);
 
             if (!word1.empty() && !word2.empty()) {
-                words.insert(word1);
-                words.insert(word2);
                 addEdge(word1, word2);
             }
         }
     }
 
+
     // 展示有向图
     void showDirectedGraph() const {
-        cout << "Directed Graph:" << endl;
-        cout << "----------------" << endl;
+        cout << "Directed Graph:" << '\n';
+        cout << "----------------" << '\n';
         for (const auto& entry : adjList) {
             cout << entry.first << " -> ";
             for (const auto& edge : entry.second) {
                 cout << edge.target << "(" << edge.weight << ") ";
             }
-            cout << endl;
+            cout << '\n';
         }
-        cout << "----------------" << endl;
+        cout << "----------------" << '\n';
     }
 
     // 查询桥接词
@@ -194,7 +212,7 @@ public:
 
                 if (!bridges.empty()) {
                     uniform_int_distribution<> dis(0, bridges.size() - 1);
-                    string selected = bridges[dis(gen)];
+                    const string& selected = bridges[dis(gen)];
                     result += selected + " ";
                 }
             }
@@ -219,8 +237,8 @@ public:
         }
         distances[w1] = 0;
 
-        priority_queue<pair<int, string>, vector<pair<int, string>>, greater<pair<int, string>>> pq;
-        pq.push({ 0, w1 });
+        priority_queue<pair<int, string>, vector<pair<int, string>>, greater<>> pq;
+        pq.emplace(0, w1);
 
         while (!pq.empty()) {
             string current = pq.top().second;
@@ -310,8 +328,8 @@ public:
         return pr[w];
     }
 
-    // 随机游走（原功能保留）
-    string randomWalk() const {
+    // 随机游走
+    std::string randomWalk() const {
         if (words.empty()) return "";
 
         random_device rd;
@@ -322,21 +340,26 @@ public:
         advance(it, dis(gen));
         string current = *it;
 
-        unordered_set<string> visitedEdges;
         vector<string> path;
         path.push_back(current);
 
+        unordered_set<string> visitedEdges;
+
         while (true) {
-            if (adjList.find(current) == adjList.end() || adjList.at(current).empty()) {
+            // 如果当前节点没有出边，直接break（但path已经有current）
+            auto iter = adjList.find(current);
+            if (iter == adjList.end() || iter->second.empty()) {
                 break;
             }
 
-            const auto& edges = adjList.at(current);
+            const auto& edges = iter->second;
+
             uniform_int_distribution<> edgeDis(0, edges.size() - 1);
             int idx = edgeDis(gen);
             const Edge& chosenEdge = edges[idx];
 
             string edgeKey = current + "->" + chosenEdge.target;
+
             if (visitedEdges.find(edgeKey) != visitedEdges.end()) {
                 break;
             }
@@ -346,26 +369,28 @@ public:
             path.push_back(current);
         }
 
+        // 构造结果字符串
         string result;
         for (size_t i = 0; i < path.size(); ++i) {
-            if (i != 0) result += " ";
+            if (i > 0) result += " ";
             result += path[i];
         }
 
         return result;
     }
 
+
     // ==== 新增文件输出功能 ====
     bool writePathToFile(const vector<string>& path, const string& filename) const {
         // 检查文件名合法性
         if (filename.empty() || filename.find_first_of("\\/:*?\"<>|") != string::npos) {
-            cerr << "Error: Invalid filename" << endl;
+            cerr << "Error: Invalid filename" << '\n';
             return false;
         }
 
         ofstream outFile(filename);
         if (!outFile.is_open()) {
-            cerr << "Error: Unable to open file " << filename << endl;
+            cerr << "Error: Unable to open file " << filename << '\n';
             return false;
         }
 
@@ -396,20 +421,20 @@ public:
             }
 
             if (!writePathToFile(nodes, filename)) {
-                cerr << "Warning: Failed to write walk result to file" << endl;
+                cerr << "Warning: Failed to write walk result to file" << '\n';
             }
         }
 
         return walkResult;
     }
-    
+
 };
 //主函数
 int main(int argc, char* argv[]) {
     WordGraph graph;
 
     if (argc < 2) {
-        cout << "Usage: " << argv[0] << " <filename>" << endl;
+        cout << "Usage: " << argv[0] << " <filename>" << '\n';
         return 1;
     }
 
@@ -418,14 +443,14 @@ int main(int argc, char* argv[]) {
 
     int choice;
     do {
-        cout << "\n===== Text Graph Processor =====" << endl;
-        cout << "1. Show directed graph" << endl;
-        cout << "2. Query bridge words" << endl;
-        cout << "3. Generate new text" << endl;
-        cout << "4. Calculate shortest path" << endl;
-        cout << "5. Calculate PageRank" << endl;
-        cout << "6. Random walk (with file output)" << endl;
-        cout << "0. Exit" << endl;
+        cout << "\n===== Text Graph Processor =====" << '\n';
+        cout << "1. Show directed graph" << '\n';
+        cout << "2. Query bridge words" << '\n';
+        cout << "3. Generate new text" << '\n';
+        cout << "4. Calculate shortest path" << '\n';
+        cout << "5. Calculate PageRank" << '\n';
+        cout << "6. Random walk (with file output)" << '\n';
+        cout << "0. Exit" << '\n';
         cout << "Enter your choice: ";
         cin >> choice;
 
@@ -441,14 +466,14 @@ int main(int argc, char* argv[]) {
             getline(cin, word1);
             cout << "Enter word2: ";
             getline(cin, word2);
-            cout << graph.queryBridgeWords(word1, word2) << endl;
+            cout << graph.queryBridgeWords(word1, word2) << '\n';
             break;
         }
         case 3: {
             string inputText;
             cout << "Enter text: ";
             getline(cin, inputText);
-            cout << "Generated text: " << graph.generateNewText(inputText) << endl;
+            cout << "Generated text: " << graph.generateNewText(inputText) << '\n';
             break;
         }
         case 4: {
@@ -457,7 +482,7 @@ int main(int argc, char* argv[]) {
             getline(cin, word1);
             cout << "Enter word2: ";
             getline(cin, word2);
-            cout << graph.calcShortestPath(word1, word2) << endl;
+            cout << graph.calcShortestPath(word1, word2) << '\n';
             break;
         }
         case 5: {
@@ -466,30 +491,30 @@ int main(int argc, char* argv[]) {
             getline(cin, word);
             double pr = graph.calcPageRank(word);
             if (pr >= 0) {
-                cout << "PageRank of \"" << word << "\": " << fixed << setprecision(4) << pr << endl;
+                cout << "PageRank of \"" << word << "\": " << fixed << setprecision(4) << pr << '\n';
             }
             else {
-                cout << "Word not found in graph!" << endl;
+                cout << "Word not found in graph!" << '\n';
             }
             break;
         }
         case 6: {
-            string filename;
+            string outputfilename;
             cout << "Enter output filename (leave empty for screen only): ";
-            getline(cin, filename);
+            getline(cin, outputfilename);
 
-            string walk = graph.randomWalkToFile(filename);
-            cout << "Random walk: " << walk << endl;
-            if (!filename.empty()) {
-                cout << "Results saved to " << filename << endl;
+            string walk = graph.randomWalkToFile(outputfilename);
+            cout << "Random walk: " << walk << '\n';
+            if (!outputfilename.empty()) {
+                cout << "Results saved to " << outputfilename << '\n';
             }
             break;
         }
         case 0:
-            cout << "Exiting..." << endl;
+            cout << "Exiting..." << '\n';
             break;
         default:
-            cout << "Invalid choice. Try again." << endl;
+            cout << "Invalid choice. Try again." << '\n';
         }
     } while (choice != 0);
 
